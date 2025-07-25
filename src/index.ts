@@ -7,6 +7,6 @@ const args = process.argv.slice(2);
 if (args[0] === "device") {
 	await handleDeviceCommand(args.slice(1));
 } else {
-	const dailyData = await loadDailyUsageData({ claudePath: `${homedir()}/.ccusage/claude.json` });
+	const dailyData = await loadDailyUsageData({ claudePath: `${homedir()}/.claude` });
 	console.log("Daily Usage Data:", dailyData);
 }
