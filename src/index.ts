@@ -32,8 +32,19 @@ if (args[0] === "device") {
 	// Check if --graph flag is present
 	const graphIndex = args.indexOf("--graph");
 	if (graphIndex !== -1) {
-		// Remove --graph from args for ccusage command
-		const ccusageArgs = args.filter((_, index) => index !== graphIndex);
+		// Check if -o option is present
+		const outputIndex = args.indexOf("-o");
+		let outputFile = null;
+		if (outputIndex !== -1 && outputIndex + 1 < args.length) {
+			outputFile = args[outputIndex + 1];
+		}
+
+		// Remove --graph and -o options from args for ccusage command
+		const ccusageArgs = args.filter((_, index) => 
+			index !== graphIndex && 
+			index !== outputIndex && 
+			(outputIndex === -1 || index !== outputIndex + 1)
+		);
 		const subcommands = ccusageArgs.length > 0 ? ccusageArgs : ["daily"];
 
 		// Get cost data with --json flag
@@ -46,41 +57,48 @@ if (args[0] === "device") {
 
 		const costData = JSON.parse(result);
 
-		// Start web server with chart
-		const server = Bun.serve({
-			port: 3004,
-			fetch(req) {
-				const url = new URL(req.url);
+		// If output file is specified, write HTML to file
+		if (outputFile) {
+			const htmlContent = getChartHTML(costData);
+			await Bun.write(outputFile, htmlContent);
+			console.log(`Chart HTML written to ${outputFile}`);
+		} else {
+			// Start web server with chart
+			const server = Bun.serve({
+				port: 3004,
+				fetch(req) {
+					const url = new URL(req.url);
 
-				if (url.pathname === "/") {
-					return new Response(getChartHTML(costData), {
-						headers: { "Content-Type": "text/html" },
-					});
-				}
+					if (url.pathname === "/") {
+						return new Response(getChartHTML(costData), {
+							headers: { "Content-Type": "text/html" },
+						});
+					}
 
-				if (url.pathname === "/data") {
-					return new Response(JSON.stringify(costData), {
-						headers: { "Content-Type": "application/json" },
-					});
-				}
+					if (url.pathname === "/data") {
+						return new Response(JSON.stringify(costData), {
+							headers: { "Content-Type": "application/json" },
+						});
+					}
 
-				return new Response("Not Found", { status: 404 });
-			},
-		});
+					return new Response("Not Found", { status: 404 });
+				},
+			});
 
-		console.log(`Chart server running at http://localhost:3004`);
+			console.log(`Chart server running at http://localhost:3004`);
 
-		// Open browser
-		await $`open http://localhost:3004`;
+			// Open browser
+			await $`open http://localhost:3004`;
 
-		// Keep server running
-		process.on("SIGINT", () => {
-			server.stop();
-			process.exit(0);
-		});
+			// Keep server running
+			process.on("SIGINT", () => {
+				server.stop();
+				process.exit(0);
+			});
 
-		// Keep the process alive
-		await new Promise(() => {});
+			// Keep the process alive
+			await new Promise(() => {});
+		}
 	} else {
 		const subcommands = args.length > 0 ? args.slice(0) : "daily";
 		await $`bunx ccusage ${subcommands}`.env({
