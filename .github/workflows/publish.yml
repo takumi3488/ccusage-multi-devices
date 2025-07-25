@@ -12,5 +12,6 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
       - name: Publish package
         run: bunx jsr publish
