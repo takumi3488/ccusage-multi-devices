@@ -1,6 +1,20 @@
 {
-  "name": "@cusage-multi-devices/ccumd",
-  "module": "index.ts",
+  "name": "ccumd",
+  "version": "0.1.0",
+  "description": "ccusage wrapper for multi devices",
+  "module": "./src/index.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/takumi3488/ccusage-multi-devices.git"
+  },
+  "license": "MIT",
+  "author": "takumi3488",
   "type": "module",
   "bin": {
     "ccumd": "./src/index.ts"
@@ -8,7 +22,8 @@
   "scripts": {
     "dev": "bun run src/index.ts",
     "lint": "biome check ./src",
-    "lint:fix": "biome check --write --unsafe ./src"
+    "lint:fix": "biome check --write --unsafe ./src",
+    "build": "bun build --minify --outfile=dist/index.js --target=bun ./src/index.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.2",
