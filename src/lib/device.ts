@@ -54,7 +54,7 @@ export function addDevice(device: string): void {
 	settings.devices.push(device);
 	saveSettings(settings);
 
-	const deviceDir = path.join(SETTINGS_DIR, "devices", device, "projects");
+	const deviceDir = path.join(SETTINGS_DIR, "devices", device);
 	mkdirSync(deviceDir, { recursive: true });
 }
 
@@ -79,37 +79,53 @@ export async function syncDeviceData(device: string): Promise<void> {
 		throw new Error(`Device '${device}' not found`);
 	}
 
-	const localDeviceDir = path.join(SETTINGS_DIR, "devices", device, "projects");
+	const localDeviceDir = path.join(SETTINGS_DIR, "devices", device);
 	mkdirSync(localDeviceDir, { recursive: true });
 
+	const remoteTarFile = `/tmp/claude-projects-${device}-${Date.now()}.tar.gz`;
+	const localTarFile = path.join(
+		localDeviceDir,
+		`claude-projects-${device}.tar.gz`,
+	);
+
 	try {
-		// First, get all JSONL files with their paths
-		const files =
-			await $`ssh ${device} "find ~/.claude/projects -name '*.jsonl' 2>/dev/null || true"`.text();
+		// Check if ~/.claude/projects exists on remote
+		const projectsExists =
+			await $`ssh ${device} "test -d ~/.claude/projects && echo 'exists' || echo 'not exists'"`.text();
 
-		if (files.trim()) {
-			for (const file of files.split("\n").filter(Boolean)) {
-				// Extract relative path from the full path
-				const relativePath = file.replace(/^.*\/\.claude\/projects\//, "");
-				const relativeDir = path.dirname(relativePath);
-
-				// Create local directory structure
-				if (relativeDir !== ".") {
-					const localSubdir = path.join(localDeviceDir, relativeDir);
-					mkdirSync(localSubdir, { recursive: true });
-				}
-
-				// Copy the file
-				const localFilePath = path.join(localDeviceDir, relativePath);
-				await $`scp ${device}:${file} ${localFilePath}`.quiet();
-			}
+		if (projectsExists.trim() !== "exists") {
 			console.log(
-				`Synced ${files.split("\n").filter(Boolean).length} files from device '${device}'`,
+				`No ~/.claude/projects directory found on device '${device}'`,
 			);
-		} else {
-			console.log(`No JSONL files found on device '${device}'`);
+			// Create empty projects directory locally
+			mkdirSync(path.join(localDeviceDir, "projects"), { recursive: true });
+			return;
 		}
+
+		// Create tar.gz on remote device
+		await $`ssh ${device} "cd ~/.claude && tar -czf ${remoteTarFile} projects"`;
+
+		// Transfer tar.gz file
+		await $`scp ${device}:${remoteTarFile} ${localTarFile}`;
+
+		// Extract tar.gz locally
+		await $`cd ${localDeviceDir} && tar -xzf ${localTarFile}`;
+
+		// Get file count for logging
+		const fileCount =
+			await $`find ${path.join(localDeviceDir, "projects")} -name "*.jsonl" 2>/dev/null | wc -l`.text();
+		console.log(`Synced ${fileCount.trim()} files from device '${device}'`);
+
+		// Clean up tar.gz files
+		await $`rm -f ${localTarFile}`;
+		await $`ssh ${device} "rm -f ${remoteTarFile}"`;
 	} catch (error) {
+		// Clean up on error
+		try {
+			await $`rm -f ${localTarFile}`.quiet();
+			await $`ssh ${device} "rm -f ${remoteTarFile}"`.quiet();
+		} catch {}
+
 		console.error(`Failed to sync data from device '${device}':`, error);
 		throw error;
 	}
