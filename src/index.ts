@@ -37,9 +37,6 @@ if (args[0] === "device") {
 		const subcommands = ccusageArgs.length > 0 ? ccusageArgs : ["daily"];
 
 		// Get cost data with --json flag
-		console.log(`Running: bunx ccusage ${subcommands.join(" ")} --json`);
-		console.log(`CLAUDE_CONFIG_DIR: ${claudePath}`);
-
 		const result = await $`bunx ccusage ${subcommands} --json`
 			.env({
 				CLAUDE_CONFIG_DIR: claudePath,
@@ -47,10 +44,7 @@ if (args[0] === "device") {
 			})
 			.text();
 
-		console.log("Raw ccusage output:", result);
-
 		const costData = JSON.parse(result);
-		console.log("Parsed cost data:", JSON.stringify(costData, null, 2));
 
 		// Start web server with chart
 		const server = Bun.serve({
@@ -123,34 +117,23 @@ function getChartHTML(costData: object): string {
         const labels = [];
         const totals = [];
         
-        console.log('Processing cost data for chart:', costData);
-        
         if (costData.daily && Array.isArray(costData.daily)) {
             // Daily data array
-            console.log('Found daily array:', costData.daily);
             for (const dayData of costData.daily) {
                 labels.push(dayData.date);
                 totals.push(dayData.totalCost || 0);
-                console.log(\`Added data point: \${dayData.date} = \${dayData.totalCost || 0}\`);
             }
         } else if (costData.usage_by_date) {
             // Daily/monthly data object
-            console.log('Found usage_by_date:', costData.usage_by_date);
             for (const [date, data] of Object.entries(costData.usage_by_date)) {
                 labels.push(date);
                 totals.push(data.total_cost || 0);
-                console.log(\`Added data point: \${date} = \${data.total_cost || 0}\`);
             }
         } else if (costData.totals && costData.totals.totalCost !== undefined) {
             // Single total from totals object
-            console.log('Found totals.totalCost:', costData.totals.totalCost);
             labels.push('Total');
             totals.push(costData.totals.totalCost);
-        } else {
-            console.log('No recognizable data structure found in costData');
         }
-        
-        console.log('Final chart data - labels:', labels, 'totals:', totals);
         
         const ctx = document.getElementById('costChart').getContext('2d');
         new Chart(ctx, {
