@@ -1,0 +1,5 @@
+{
+  "name": "@cusage-multi-devices/ccumd",
+  "license": "MIT",
+  "exports": "./src/index.ts"
+}

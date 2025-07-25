@@ -1,5 +1,5 @@
 {
-  "name": "ccusage-multi-devices",
+  "name": "@cusage-multi-devices/ccumd",
   "module": "index.ts",
   "type": "module",
   "bin": {
