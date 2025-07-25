@@ -30,5 +30,5 @@ if (args[0] === "device") {
 	}
 
 	const claudePath = paths.join(",");
-	await $`bunx ccusage`.env({CLAUDE_CONFIG_DIR_ENV: claudePath});
+	await $`bunx ccusage`.env({CLAUDE_CONFIG_DIR: claudePath});
 }
