@@ -6,6 +6,34 @@ import { listDevices, syncDeviceData } from "./lib/device";
 
 const args = process.argv.slice(2);
 
+// Check for help flag
+if (args.includes("-h") || args.includes("--help")) {
+	console.log(`Usage: ccumd [OPTIONS] [COMMAND]
+
+Commands:
+  daily              Show daily usage (default)
+  monthly            Show monthly usage
+  totals             Show total usage
+  device <command>   Manage devices
+
+Options:
+  -h, --help         Show this help message
+  --graph            Display usage as interactive chart
+  -o <file>          Save chart as HTML file (with --graph)
+
+Device Commands:
+  device                  List all devices
+  device add <name>       Add a new device
+  device delete <name>    Delete a device
+
+Examples:
+  ccumd                    # Show daily usage
+  ccumd monthly            # Show monthly usage
+  ccumd --graph            # Show daily usage as chart
+  ccumd daily --graph      # Show daily usage as chart`);
+	process.exit(0);
+}
+
 if (args[0] === "device") {
 	await handleDeviceCommand(args.slice(1));
 } else {
@@ -97,7 +125,7 @@ if (args[0] === "device") {
 			});
 
 			// Keep the process alive
-			await new Promise(() => {});
+			await new Promise(() => { });
 		}
 	} else {
 		const subcommands = args.length > 0 ? args.slice(0) : "daily";
