@@ -24,7 +24,6 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          registry-url: 'https://registry.npmjs.org'
           node-version: '22'
 
       - name: Get current version
@@ -81,11 +80,21 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          registry-url: 'https://registry.npmjs.org'
+          node-version: '22'
+
       - uses: oven-sh/setup-bun@v2
+
       - name: Install dependencies
         run: bun install
+
       - name: Build package
         run: bun run build
+
       - name: Publish to NPM
         run: npm publish --access public
         env:
