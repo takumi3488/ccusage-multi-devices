@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { $ } from "bun";
 
 const SETTINGS_DIR = path.join(
 	process.env.HOME || process.env.USERPROFILE || "~",
@@ -87,8 +88,6 @@ export async function syncDeviceData(device: string): Promise<void> {
 		`claude-projects-${device}.tar.gz`,
 	);
 
-	const { $ } = await import("bun");
-
 	try {
 		// Check if ~/.claude/projects exists on remote
 		const projectsExists =
@@ -123,7 +122,6 @@ export async function syncDeviceData(device: string): Promise<void> {
 	} catch (error) {
 		// Clean up on error
 		try {
-			const { $ } = await import("bun");
 			await $`rm -f ${localTarFile}`.quiet();
 			await $`ssh ${device} "rm -f ${remoteTarFile}"`.quiet();
 		} catch {}
