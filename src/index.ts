@@ -1,5 +1,6 @@
 import { homedir } from "node:os";
 import path from "node:path";
+import { $ } from "bun";
 import { handleDeviceCommand } from "./cli";
 import { listDevices, syncDeviceData } from "./lib/device";
 
@@ -75,7 +76,6 @@ if (args[0] === "device") {
 		const subcommands = ccusageArgs.length > 0 ? ccusageArgs : ["daily"];
 
 		// Get cost data with --json flag
-		const { $ } = await import("bun");
 		const result = await $`bunx ccusage ${subcommands} --json`
 			.env({
 				CLAUDE_CONFIG_DIR: claudePath,
@@ -116,7 +116,6 @@ if (args[0] === "device") {
 			console.log(`Chart server running at http://localhost:3004`);
 
 			// Open browser
-			const { $ } = await import("bun");
 			await $`open http://localhost:3004`;
 
 			// Keep server running
@@ -130,7 +129,6 @@ if (args[0] === "device") {
 		}
 	} else {
 		const subcommands = args.length > 0 ? args.slice(0) : "daily";
-		const { $ } = await import("bun");
 		await $`bunx ccusage ${subcommands}`.env({
 			CLAUDE_CONFIG_DIR: claudePath,
 			FORCE_COLOR: "1",
