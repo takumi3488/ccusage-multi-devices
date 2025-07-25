@@ -30,7 +30,8 @@ if (args[0] === "device") {
 	}
 
 	const claudePath = paths.join(",");
-	await $`bunx ccusage`.env({
+	const subcommands = args.length > 0 ? args.slice(0) : "daily";
+	await $`bunx ccusage ${subcommands}`.env({
 		CLAUDE_CONFIG_DIR: claudePath,
 		FORCE_COLOR: "1",
 	});
