@@ -1,3 +1,5 @@
+#!/usr/bin/env bun
+
 import { homedir } from "node:os";
 import path from "node:path";
 import { $ } from "bun";
