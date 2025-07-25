@@ -70,10 +70,11 @@ if (args[0] === "device") {
 		}
 
 		// Remove --graph and -o options from args for ccusage command
-		const ccusageArgs = args.filter((_, index) => 
-			index !== graphIndex && 
-			index !== outputIndex && 
-			(outputIndex === -1 || index !== outputIndex + 1)
+		const ccusageArgs = args.filter(
+			(_, index) =>
+				index !== graphIndex &&
+				index !== outputIndex &&
+				(outputIndex === -1 || index !== outputIndex + 1),
 		);
 		const subcommands = ccusageArgs.length > 0 ? ccusageArgs : ["daily"];
 
@@ -127,7 +128,7 @@ if (args[0] === "device") {
 			});
 
 			// Keep the process alive
-			await new Promise(() => { });
+			await new Promise(() => {});
 		}
 	} else {
 		const subcommands = args.length > 0 ? args.slice(0) : "daily";

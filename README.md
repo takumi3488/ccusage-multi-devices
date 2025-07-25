@@ -1,12 +1,6 @@
 # ccusage-multi-devices
 
-🚧 This project is currently under development.
-
-ccusage-multi-devices is a Bun CLI inspired byhttps://github.com/ryoppippi/ccusage, which retrieves Claude Code usage fees.
-
-## Installation
-
-todo: Add installation instructions.
+ccusage-multi-devices is a Bun CLI inspired byhttps://github.com/ryoppippi/ccusage, which retrieves Claude Code usage fees and can display them as graphs.
 
 ## Usage
 
