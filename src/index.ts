@@ -138,13 +138,13 @@ function getChartHTML(costData: object): string {
         if (costData.daily && Array.isArray(costData.daily)) {
             // Daily data array
             for (const dayData of costData.daily) {
-                labels.push(dayData.date);
+                labels.push(dayData.date.substring(5));
                 totals.push(dayData.totalCost || 0);
             }
         } else if (costData.usage_by_date) {
             // Daily/monthly data object
             for (const [date, data] of Object.entries(costData.usage_by_date)) {
-                labels.push(date);
+                labels.push(date.substring(5));
                 totals.push(data.total_cost || 0);
             }
         } else if (costData.totals && costData.totals.totalCost !== undefined) {
@@ -155,14 +155,13 @@ function getChartHTML(costData: object): string {
         
         const ctx = document.getElementById('costChart').getContext('2d');
         new Chart(ctx, {
-            type: 'line',
+            type: 'bar',
             data: {
                 labels: labels,
                 datasets: [{
                     label: 'Cost ($)',
                     data: totals,
-                    borderColor: 'rgb(75, 192, 192)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    backgroundColor: 'rgba(67, 166, 233, 0.6)',
                     tension: 0.1
                 }]
             },
@@ -174,7 +173,7 @@ function getChartHTML(costData: object): string {
                         beginAtZero: true,
                         ticks: {
                             callback: function(value) {
-                                return '$' + value.toFixed(4);
+                                return '$' + value.toFixed(1);
                             }
                         }
                     }
