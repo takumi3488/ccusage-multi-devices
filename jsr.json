@@ -1,6 +1,0 @@
-{
-  "name": "@cusage-multi-devices/ccumd",
-  "version": "0.1.0",
-  "license": "MIT",
-  "exports": "./src/index.ts"
-}
