@@ -11,9 +11,9 @@ todo: Add installation instructions.
 ## Usage
 
 ```
-bunx ccumd                        # Display daily usage
-bunx ccumd --graph 10d            # Display a graph of usage for the last 10 days
-bunx ccumd device                 # Display the list of registered devices
-bunx ccumd device add <device>    # Add a device (<device> is usually the Host value in `$HOME/.ssh/config`)
-bunx ccumd device delete <device> # Delete a device
+bunx ccumd                                                   # Display daily usage
+bunx ccumd --graph --since 20250525 --until 20250530         # Display a graph of usage for the last 10 days
+bunx ccumd device                                            # Display the list of registered devices
+bunx ccumd device add <device>                               # Add a device (<device> is usually the Host value in `$HOME/.ssh/config`)
+bunx ccumd device delete <device>                            # Delete a device
 ```
