@@ -15,7 +15,9 @@ export async function handleDeviceCommand(args: string[]) {
 				console.log("No devices registered.");
 			} else {
 				console.log("Registered devices:");
-				devices.forEach((device) => console.log(`  - ${device}`));
+				devices.forEach((device) => {
+					console.log(`  - ${device}`);
+				});
 			}
 			break;
 		}
