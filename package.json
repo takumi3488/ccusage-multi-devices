@@ -1,6 +1,6 @@
 {
   "name": "ccumd",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "ccusage wrapper for multi devices",
   "module": "./src/index.ts",
   "files": [
