@@ -3,8 +3,9 @@
 import { homedir } from "node:os";
 import path from "node:path";
 import { $ } from "bun";
-import { handleDeviceCommand } from "./cli";
-import { listDevices, syncDeviceData } from "./lib/device";
+import { handleDeviceCommand, handleS3Command } from "./cli";
+import { getS3Buckets, listDevices, syncDeviceData } from "./lib/device";
+import { syncS3Data } from "./lib/s3";
 
 const args = process.argv.slice(2);
 
@@ -17,6 +18,7 @@ Commands:
   monthly            Show monthly usage
   totals             Show total usage
   device <command>   Manage devices
+  s3 <command>       Manage S3 integration
 
 Options:
   -h, --help         Show this help message
@@ -28,20 +30,30 @@ Device Commands:
   device add <name>       Add a new device
   device delete <name>    Delete a device
 
+S3 Commands:
+  s3                      List configured S3 buckets
+  s3 add <name> ...       Add an S3 bucket configuration
+  s3 delete <name>        Delete an S3 bucket configuration
+
 Examples:
   ccumd                    # Show daily usage
   ccumd monthly            # Show monthly usage
   ccumd --graph            # Show daily usage as chart
-  ccumd daily --graph      # Show daily usage as chart`);
+  ccumd daily --graph      # Show daily usage as chart
+  ccumd s3 add my-s3 https://s3.amazonaws.com my-bucket key secret`);
 	process.exit(0);
 }
 
 if (args[0] === "device") {
 	await handleDeviceCommand(args.slice(1));
+} else if (args[0] === "s3") {
+	await handleS3Command(args.slice(1));
 } else {
 	const devices = listDevices();
+	const s3Buckets = getS3Buckets();
 	const paths = [`${homedir()}/.claude`];
 
+	// Sync device data
 	if (devices.length > 0) {
 		console.log("Syncing device data...");
 		for (const device of devices) {
@@ -52,6 +64,22 @@ if (args[0] === "device") {
 				console.log(`✓ Synced ${device}`);
 			} catch (error) {
 				console.error(`✗ Failed to sync ${device}: ${error}`);
+			}
+		}
+		console.log();
+	}
+
+	// Sync S3 data if configured
+	if (s3Buckets.length > 0) {
+		console.log("Syncing S3 data...");
+		for (const s3Config of s3Buckets) {
+			try {
+				await syncS3Data(s3Config);
+				const s3Path = path.join(homedir(), ".ccumd", "s3", s3Config.name);
+				paths.push(s3Path);
+				console.log(`✓ Synced S3: ${s3Config.name}`);
+			} catch (error) {
+				console.error(`✗ Failed to sync S3 ${s3Config.name}: ${error}`);
 			}
 		}
 		console.log();

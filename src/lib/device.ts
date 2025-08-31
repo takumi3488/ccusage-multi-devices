@@ -8,8 +8,18 @@ const SETTINGS_DIR = path.join(
 );
 const SETTINGS_FILE = path.join(SETTINGS_DIR, "settings.json");
 
+interface S3Bucket {
+	name: string;
+	endpoint: string;
+	bucket: string;
+	accessKeyId: string;
+	secretAccessKey: string;
+	region?: string;
+}
+
 interface Settings {
 	devices: string[];
+	s3Buckets?: S3Bucket[];
 }
 
 function ensureSettingsDir() {
@@ -44,6 +54,45 @@ function saveSettings(settings: Settings) {
 export function listDevices(): string[] {
 	const settings = loadSettings();
 	return settings.devices;
+}
+
+export function getS3Buckets(): S3Bucket[] {
+	const settings = loadSettings();
+	return settings.s3Buckets || [];
+}
+
+export function addS3Bucket(bucket: S3Bucket): void {
+	const settings = loadSettings();
+	if (!settings.s3Buckets) {
+		settings.s3Buckets = [];
+	}
+
+	// Check if bucket with same name already exists
+	const existingIndex = settings.s3Buckets.findIndex(
+		(b) => b.name === bucket.name,
+	);
+	if (existingIndex !== -1) {
+		// Update existing bucket
+		settings.s3Buckets[existingIndex] = bucket;
+	} else {
+		// Add new bucket
+		settings.s3Buckets.push(bucket);
+	}
+
+	saveSettings(settings);
+}
+
+export function deleteS3Bucket(name: string): void {
+	const settings = loadSettings();
+	if (settings.s3Buckets) {
+		settings.s3Buckets = settings.s3Buckets.filter((b) => b.name !== name);
+		saveSettings(settings);
+	}
+}
+
+export function getS3Bucket(name: string): S3Bucket | undefined {
+	const settings = loadSettings();
+	return settings.s3Buckets?.find((b) => b.name === name);
 }
 
 export function addDevice(device: string): void {
