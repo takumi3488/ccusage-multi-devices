@@ -6,7 +6,7 @@
       "dependencies": {
         "@aws-sdk/client-s3": "^3.0.0",
         "@typescript/native-preview": "^7.0.0-dev.20250725.1",
-        "ccusage": "^16.1.1",
+        "ccusage": "^17.0.0",
       },
       "devDependencies": {
         "@biomejs/biome": "2.2.4",
@@ -240,7 +240,7 @@
 
     "bun-types": ["bun-types@1.2.19", "", { "dependencies": { "@types/node": "*" }, "peerDependencies": { "@types/react": "^19" } }, "sha512-uAOTaZSPuYsWIXRpj7o56Let0g/wjihKCkeRqUBhlLVM/Bt+Fj9xTo+LhC1OV1XDaGkz4hNC80et5xgy+9KTHQ=="],
 
-    "ccusage": ["ccusage@16.2.0", "", { "bin": { "ccusage": "dist/index.js" } }, "sha512-eP7RosNkL44L4N0tAevlQxbgwfihNQ6jsGdtK00JXe89KmXaoLawm2nDrW+R/sAJv3Yk2+S0uS7K/sidYtYQdg=="],
+    "ccusage": ["ccusage@17.0.2", "", { "bin": { "ccusage": "dist/index.js" } }, "sha512-t8W/L8bjOvH0BtnPusATWGmMrrWVqQ3Yp5Jb+zqws9FbL3nxAeScPDH43BVaXbKIK98fJSFmKapRJnnfTSR4Rg=="],
 
     "csstype": ["csstype@3.1.3", "", {}, "sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw=="],
 
