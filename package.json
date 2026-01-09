@@ -35,6 +35,6 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.0.0",
     "@typescript/native-preview": "^7.0.0-dev.20250725.1",
-    "ccusage": "^17.0.0"
+    "ccusage": "^18.0.0"
   }
 }
